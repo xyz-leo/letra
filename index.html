@@ -1,0 +1,430 @@
+<!-- Filename: index.html-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Letra — Jogo de palavras offline</title>
+  <style>
+    /* Light mode color variables */
+    :root {
+      --color-bg: #f9f9f9;           /* Main background */
+      --color-text: #222222;         /* Default text color */
+      --color-subtle: #888888;       /* Secondary text color */
+      --color-border: #cccccc;       /* Borders and light lines */
+      --color-tile: #e0e0e0;         /* Tile background (game squares) */
+
+      --color-accent: #3ecf8e;       /* Accent color */
+      --color-correct: #6aaa64;      /* Correct letter tile color */
+      --color-wrong-spot: #c9b458;   /* Letter in wrong position tile color */
+      --color-incorrect: #787c7e;    /* Incorrect letter tile color */
+    }
+
+    /* Dark mode colors override */
+    body.dark {
+      --color-bg: #121212;
+      --color-text: #f1f1f1;
+      --color-subtle: #aaaaaa;
+      --color-border: #333333;
+      --color-tile: #1e1e1e;
+    }
+
+    /* Reset default spacing and use border-box sizing */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Base font size and smooth scrolling */
+    html {
+      font-size: 62.5%; /* 1rem = 10px */
+      scroll-behavior: smooth;
+    }
+
+    /* Body layout and theming */
+    body {
+      display: flex;
+      flex-direction: column;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      font-family: sans-serif;
+      font-size: 1.6rem; /* 16px */
+      line-height: 1.5;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* Headings inherit font weight and color */
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: 600;
+      line-height: 1.2;
+      color: inherit;
+    }
+
+    /* Links inherit color, no underline */
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Remove default list styles */
+    ul, ol {
+      list-style: none;
+    }
+
+    /* Responsive media */
+    img, picture, video, canvas, svg {
+      max-width: 100%;
+      display: block;
+    }
+
+    /* Form elements inherit font and remove borders */
+    button, input, textarea, select {
+      font: inherit;
+      color: inherit;
+      background: none;
+      border: none;
+      outline: none;
+    }
+
+    /* Remove number input spinner buttons on WebKit browsers */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Header grid layout */
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 1rem 3rem;
+      gap: 1rem;
+      background-color: var(--color-tile);
+    }
+    
+    /* Left button group */
+    .left-buttons {
+      justify-self: start;
+      display: flex;
+      gap: 3rem;
+    }
+
+    /* Right button group */
+    .right-buttons {
+      justify-self: end;
+      display: flex;
+      gap: 3rem;
+    }
+
+    /* Center app name styling */
+    .app-name {
+      font-size: 2rem;
+      justify-self: center;
+      text-align: center;
+    }
+
+    /* Buttons in header larger for better tap targets */
+    .left-buttons button,
+    .right-buttons button {
+      font-size: 4rem;
+    }
+
+    /* Main board container styles */
+    main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1; /* Take remaining vertical space */
+    }
+    
+    /* Board holds rows vertically */
+    .game-board {
+      display: flex;
+      flex-direction: column;
+      max-width: 500px;
+      width: 100%;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    /* Each row is a grid of 5 tiles */
+    .row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+    }
+
+    /* Individual tile style */
+    .tile {
+      aspect-ratio: 1 / 1; /* Make tile square */
+      background-color: var(--color-tile);
+      border: 2px solid var(--color-border);
+      border-radius: 1rem;
+      font-size: 6rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      user-select: none; /* Prevent text selection */
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Tile color for correct letter and position */
+    .tile.correct {
+      background-color: var(--color-correct);
+      border-color: var(--color-correct);
+      color: white;
+    }
+
+    /* Tile color for correct letter wrong position */
+    .tile.present {
+      background-color: var(--color-wrong-spot);
+      border-color: var(--color-wrong-spot);
+      color: white;
+    }
+
+    /* Tile color for incorrect letter */
+    .tile.absent {
+      background-color: var(--color-incorrect);
+      border-color: var(--color-incorrect);
+      color: white;
+    }
+    
+    /* Virtual keyboard container */
+    .virtual-keyboard {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 2rem 1rem;
+      width: 100%;
+      max-width: 700px;
+      margin: 4rem auto;
+      box-sizing: border-box;
+    }
+
+    /* Each keyboard row */
+    .keyboard-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.4rem;
+      width: 100%;
+    }
+
+    /* Individual key style */
+    .key {
+      background-color: var(--color-tile);
+      color: white;
+      font-size: clamp(1rem, 4vw, 2.5rem); /* Responsive font size */
+      font-weight: bold;
+      padding: 0.8em 0.6em;
+      border: none;
+      border-radius: 0.6rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      flex: 1;
+      min-width: 2.5rem;
+      transition: background-color 0.2s ease;
+      box-sizing: border-box;
+    }
+
+    /* Hover effect for keys */
+    .key:hover {
+      background-color: var(--color-border);
+    }
+
+    /* Larger keys for Enter and Backspace */
+    .key-large {
+      flex: 1.5;
+    }
+
+    /* Footer styles */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background-color: var(--color-tile);
+    }
+
+    footer a {
+      color: var(--color-accent);
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body class="dark">
+  <!-- Website Header -->
+  <header>
+    <div class="left-buttons">
+      <button type="button" aria-label="Help">❔</button>
+      <button type="button" aria-label="Stats">📊</button>
+    </div>
+    
+    <div class="app-name">
+      <h1>LETRA</h1>
+    </div>
+
+    <div class="right-buttons">
+      <button type="button" aria-label="Toggle between dark and light mode">💡</button>
+      <!-- About will display a dropdown menu with about, whoami, tactics and more -->
+      <button type="button" aria-label="Configurations">⚙️</button>
+    </div>
+  </header>
+
+  <!-- Main board area with rows for each guess attempt -->
+  <main>
+    <div class="game-board">
+      <!-- Tiles will be generated here dynamically with js -->
+    </div>
+  </main>
+  
+  <!-- On-screen keyboard for input, will be generated here with js-->
+  <div class="virtual-keyboard"></div>
+
+  <footer>
+    <small>Personal learning project, inspired by the term.ooo game — Developed by <a href="https://www.github.com/xyz-leo" target="_blank">xyz-leo</a></small>
+  </footer>
+
+  <script>
+    // Constants for board size
+    const NUM_ROWS = 6;
+    const NUM_COLS = 5;
+
+    // Reference to board container
+    const board = document.querySelector(".game-board");
+
+    // Dynamically create rows and tiles for the game board
+    for (let row = 0; row < NUM_ROWS; row++) {
+      const rowElement = document.createElement("div");
+      rowElement.classList.add("row");
+
+      for (let col = 0; col < NUM_COLS; col++) {
+        const tile = document.createElement("div");
+        tile.classList.add("tile");
+        tile.dataset.row = row;  // store row index
+        tile.dataset.col = col;  // store column index
+        rowElement.appendChild(tile);
+      }
+
+      board.appendChild(rowElement);
+    }
+
+    // Keyboard layout rows
+    const keyboardLayout = [
+      ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+      ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+      ["↵", "Z", "X", "C", "V", "B", "N", "M", "🔙"]
+    ];
+
+    // Reference to virtual keyboard container
+    const keyboard = document.querySelector(".virtual-keyboard");
+
+    // Create buttons for each key in the layout
+    keyboardLayout.forEach(row => {
+      const rowDiv = document.createElement("div");
+      rowDiv.classList.add("keyboard-row");
+
+      row.forEach(key => {
+        const keyButton = document.createElement("button");
+        keyButton.textContent = key;
+        keyButton.classList.add("key");
+        // Larger keys for Enter (↵) and Backspace (🔙)
+        if (key === "↵" || key === "🔙") {
+          keyButton.classList.add("key-large");
+        }
+        keyButton.setAttribute("data-key", key);
+        rowDiv.appendChild(keyButton);
+      });
+
+      keyboard.appendChild(rowDiv);
+    });
+
+    // Track current position on board
+    let currentRow = 0;
+    let currentCol = 0;
+    // Store letters typed for current guess
+    const currentGuess = [];
+
+    // Allowed letters for input
+    const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    // Listen for physical keyboard input
+    document.addEventListener("keydown", (e) => {
+      const key = e.key.toUpperCase();
+      handleKey(key);
+    });
+
+    // Listen for clicks on virtual keyboard keys
+    document.querySelector(".virtual-keyboard").addEventListener("click", (e) => {
+      if (e.target.classList.contains("key")) {
+        const key = e.target.textContent.toUpperCase();
+        handleKey(key);
+      }
+    });
+
+    // Handle key inputs from both physical and virtual keyboards
+    function handleKey(key) {
+      if (key === "BACKSPACE" || key === "🔙") {
+        deleteLetter();
+      } else if (key === "ENTER" || key === "⏎" || key === "↵") {
+        submitGuess();
+      } else if (LETTERS.includes(key) && currentCol < NUM_COLS) {
+        insertLetter(key);
+      }
+    }
+
+    // Insert letter into current tile and advance column
+    function insertLetter(letter) {
+      const tile = document.querySelector(
+        `.tile[data-row="${currentRow}"][data-col="${currentCol}"]`
+      );
+      if (!tile) return;
+
+      tile.textContent = letter;
+      currentGuess.push(letter);
+      currentCol++;
+    }
+
+    // Remove letter from current tile and move back column
+    function deleteLetter() {
+      if (currentCol === 0) return; // No letters to delete
+      currentCol--;
+      const tile = document.querySelector(
+        `.tile[data-row="${currentRow}"][data-col="${currentCol}"]`
+      );
+      if (!tile) return;
+
+      tile.textContent = "";
+      currentGuess.pop();
+    }
+
+    // Submit the current guess for validation
+    function submitGuess() {
+      if (currentGuess.length !== NUM_COLS) return; // Require full guess
+
+      const word = currentGuess.join("").toLowerCase();
+      console.log("Submitting:", word);
+
+      // TODO: Validate word and update tile colors accordingly
+
+      // Move to next row for next guess
+      currentRow++;
+      currentCol = 0;
+      currentGuess.length = 0;
+    }
+
+    // TODO: Sample word lists by difficulty (for future validation)
+    const words = {
+      easy: ["casa", "amigo", "paz", "vento", "nuvem", "livro", "praia", "terra", "nobre", "verde"],
+      normal: ["glifo", "jazem", "nível", "xenon", "plumo", "cruel", "ébrio", "âmago", "óbice", "quark"]
+    };
+  </script>
+</body>
+</html>
