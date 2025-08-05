@@ -10,15 +10,15 @@
     /* Light mode color variables */
     :root {
       --color-bg: #f9f9f9;           /* Main background */
-      --color-text: #222222;         /* Default text color */
-      --color-subtle: #888888;       /* Secondary text color */
-      --color-border: #cccccc;       /* Borders and light lines */
+      --color-text: #1a1a1a;         /* Default text color */
+      --color-subtle: #6e6e6e;       /* Secondary text color */
+      --color-border: #999999;       /* Borders and light lines */
       --color-tile: #e0e0e0;         /* Tile background (game squares) */
 
       --color-accent: #3ecf8e;       /* Accent color */
-      --color-correct: #6aaa64;      /* Correct letter tile color */
+      --color-correct: #4caf50;      /* Correct letter tile color */
       --color-wrong-spot: #c9b458;   /* Letter in wrong position tile color */
-      --color-incorrect: #787c7e;    /* Incorrect letter tile color */
+      --color-incorrect: #b0b0b0;    /* Incorrect letter tile color */
     }
 
     /* Dark mode colors override */
@@ -131,7 +131,7 @@
     .left-buttons button,
     .right-buttons button {
       font-size: 3rem;
-      border: solid 3px #ccc;
+      border: solid 3px var(--color-text);
       border-radius: 1rem;
       padding: 0 1rem;
     }
@@ -162,13 +162,14 @@
       align-items: center;
       background: rgba(171, 161, 64, 0.8);
       color: #f1f1f1;
-      font-size: 3rem;
-      padding: 6rem 2rem;
+      font-size: 2rem;
+      padding: 4rem 4rem;
+      line-height: 3.5rem;
       border-radius: 8px;
       width: 70%;
       height: 70%;
-      min-height: 300px;
-      min-width: 300px;
+      min-height: 400px;
+      min-width: 400px;
       max-width: 900px;
       max-height: 900px;
       aspect-ratio: 1 / 1; /* Square form modal */
@@ -185,7 +186,7 @@
       position: fixed;
       top: 8rem;
       left: 90%;
-      font-size: 6rem;
+      font-size: 5rem;
       color: crimson;
       cursor: pointer;
       z-index: 100;
@@ -196,7 +197,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-top: 3rem;
+      margin: auto;
     }
 
     #restart-button {
@@ -222,9 +223,9 @@
       display: flex;
       flex-direction: column;
       max-width: 450px;
-      width: min(50vw, 450px);
+      width: min(70vw, 450px);
       gap: clamp(0.4rem, 1vw, 1rem);
-      margin-top: 2rem;
+      margin: auto;
     }
 
     /* Each row is a grid of 5 tiles */
@@ -280,7 +281,7 @@
       padding: 2rem 1rem;
       width: min(95vw, 700px);
       max-width: 700px;
-      margin: 4rem auto;
+      margin: auto;
       box-sizing: border-box;
     }
 
@@ -295,7 +296,7 @@
     /* Individual key style */
     .key {
       background-color: var(--color-tile);
-      color: white;
+      color: var(--color-text);
       font-size: clamp(1rem, 3vw, 2.5rem); /* Responsive font size */
       font-weight: bold;
       padding: 0.6em 0.4em;
@@ -381,10 +382,10 @@
 
     .modal-content {
       font-size: clamp(1.6rem, 4vw, 2rem);
-      min-height: 300px;
-      min-width: 250px;
+      min-height: 400px;
+      min-width: 300px;
       max-width: 350px;
-      max-height: 500px;
+      max-height: 600px;
     }
 
     .modal-content button {
@@ -521,7 +522,35 @@
     const helpbtn = document.getElementById('help');
 
     helpbtn.addEventListener('click', () => {
-      openModal(`<h2>Ajuda</h2><p>Como jogar o jogo LETRA...</p>`);
+      openModal(`<h2>Como Jogar LETRA</h2>
+<p>Bem-vindo ao LETRA — um jogo de adivinhação de palavras offline inspirado no Term.ooo!</p>
+
+<h3>Objetivo</h3>
+<p>Adivinhe a palavra secreta em até 6 tentativas.</p>
+
+<h3>Como Jogar</h3>
+<ul>
+  <li>Digite uma palavra de 5 letras usando o teclado virtual ou o teclado físico.</li>
+  <li>Após cada tentativa, as cores das letras irão mudar para indicar:</li>
+  <ul>
+    <li><strong>Verde:</strong> letra correta e na posição certa.</li>
+    <li><strong>Amarelo:</strong> letra correta, mas na posição errada.</li>
+    <li><strong>Cinza:</strong> letra incorreta, não está na palavra.</li>
+  </ul>
+  <li>Use essas dicas para ajustar suas próximas tentativas.</li>
+</ul>
+
+<h3>Botões</h3>
+<ul>
+  <li><strong>❔ Help:</strong> abre este tutorial.</li>
+  <li><strong>📊 Stats:</strong> mostra suas estatísticas de jogo.</li>
+  <li><strong>💡 Tema:</strong> alterna entre modo claro e escuro.</li>
+  <li><strong>⚙️ Configurações:</strong> ajustes do jogo.</li>
+  <li><strong>🔄 Reiniciar:</strong> reinicia o jogo atual.</li>
+</ul>
+
+<p>Divirta-se e boa sorte!</p>
+`);
     })
 
     // Stats button
