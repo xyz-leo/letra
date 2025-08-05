@@ -341,6 +341,100 @@
       color: var(--color-accent);
       cursor: pointer;
     }
+
+    @media (max-width: 600px) {
+      .tile {
+        font-size: 3.5rem;
+      }
+
+      .game-board {
+        width: 85%;
+        gap: 1rem;
+        margin-top: 0.5rem;
+      }
+
+      .restart-button {
+        margin-top: 2rem;
+      }
+
+      #restart-button {
+        font-size: 4rem;
+      }
+
+      footer {
+        padding: 0.5rem;
+      }
+
+      .left-buttons button,
+      .right-buttons button {
+        font-size: 3rem;
+      }
+
+      .app-name {
+        font-size: 1.6rem;
+      }
+
+      .virtual-keyboard {
+        width: 95%;
+        max-width: 600px;
+        margin: 1rem auto;
+      }
+
+      .modal-content {
+        font-size: 2rem;
+        min-height: 500px;
+        min-width: 350px;
+        max-width: 350px;
+        max-height: 500px;
+      }
+
+      .modal-content button {
+        top: 10rem;
+        font-size: 4rem;
+      }
+    }
+
+    @media (orientation: landscape) {
+      /* Aplica quando o celular está "deitado" */
+      .left-buttons button,
+      .right-buttons button {
+        font-size: 2.5rem;
+      }
+
+      .tile {
+        font-size: 2rem;
+      }
+
+      .game-board {
+        width: 30%;
+        margin-top: 0.5rem;
+      }
+
+      .restart-button {
+        margin-top: 1rem;
+      }
+
+      #restart-button {
+        font-size: 4rem;
+      }
+
+      .virtual-keyboard {
+        width: 60%;
+        max-width: 600px;
+        margin: 1rem auto;
+      }
+
+      .modal-content button {
+        top: 4.5rem;
+        left: 80%;
+        font-size: 3.5rem;
+      }
+
+      .modal-content {
+        font-size: 1.6rem;
+      }
+    }
+
   </style>
 </head>
 
