@@ -9,11 +9,12 @@
   <style>
     /* Light mode color variables */
     :root {
-      --color-bg: #f9f9f9;           /* Main background */
-      --color-text: #1a1a1a;         /* Default text color */
-      --color-subtle: #6e6e6e;       /* Secondary text color */
-      --color-border: #999999;       /* Borders and light lines */
-      --color-tile: #e0e0e0;         /* Tile background (game squares) */
+      /* Body will be dark as default */
+      --color-bg: #121212;
+      --color-text: #f1f1f1;
+      --color-subtle: #aaaaaa;
+      --color-border: #333333;
+      --color-tile: #1e1e1e;
 
       --color-accent: #3ecf8e;       /* Accent color */
       --color-correct: #4caf50;      /* Correct letter tile color */
@@ -21,13 +22,13 @@
       --color-incorrect: #b0b0b0;    /* Incorrect letter tile color */
     }
 
-    /* Dark mode colors override */
-    body.dark {
-      --color-bg: #121212;
-      --color-text: #f1f1f1;
-      --color-subtle: #aaaaaa;
-      --color-border: #333333;
-      --color-tile: #1e1e1e;
+    /* Light theme configuration */
+    body.light {
+      --color-bg: #f9f9f9;           /* Main background */
+      --color-text: #1a1a1a;         /* Default text color */
+      --color-subtle: #6e6e6e;       /* Secondary text color */
+      --color-border: #999999;       /* Borders and light lines */
+      --color-tile: #e0e0e0;         /* Tile background (game squares) */
     }
 
     /* Reset default spacing and use border-box sizing */
@@ -443,7 +444,7 @@
   </style>
 </head>
 
-<body class="dark">
+<body>
   <!-- Website Header -->
   <header>
     <div class="left-buttons">
@@ -558,7 +559,7 @@
     statsbtn.addEventListener('click', () => {
       openModal(`
 <h2>Estatísticas</h2><br>
-<p><strong>Partidas: ${getGamesPlayed()}<strong><p>
+<p><strong>Partidas jogadas: ${getGamesPlayed()}<strong><p>
 <p><strong>Partidas vencidas: ${getCorrectWordsCount()}<strong><p>
 <p><strong>Partidas perdidas: ${getLostGamesCount()}<strong></p>
 <p><strong>Tentativas: ${getAttemptsCount()}<strong></p>
@@ -579,9 +580,9 @@
         body.classList.add('light');
         body.classList.remove('dark');
       } else {
-        // Se não tiver nada salvo, define light como padrão
-        body.classList.add('light');
-        body.classList.remove('dark');
+        // If nothing is saved, set dark as default
+        body.classList.add('dark');
+        body.classList.remove('light');
       }
     }
 
