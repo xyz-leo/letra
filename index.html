@@ -135,6 +135,75 @@
       font-size: 4rem;
     }
 
+    .left-buttons button:hover, 
+    .right-buttons button:hover {
+      cursor: pointer;
+      transform: translateY(-5px);
+      transition: 0.5s ease;
+    }
+
+    .modal {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    .modal-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(62, 207, 142, 0.4);
+      color: #f1f1f1;
+      font-size: 3rem;
+      padding: 6rem 2rem;
+      border-radius: 8px;
+      width: 50%;
+      height: 50%;
+      min-height: 300px;
+      min-width: 300px;
+      max-width: 900px;
+      max-height: 900px;
+      aspect-ratio: 1 / 1; /* Square form modal */
+      overflow: auto;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .modal-content button {
+      position: fixed;
+      top: 8rem;
+      left: 90%;
+      font-size: 6rem;
+      color: crimson;
+      cursor: pointer;
+      z-index: 100;
+    }
+
+    /* restart button */
+    .restart-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 5rem;
+    }
+
+    #restart-button {
+      font-size: 5rem;
+    }
+
+    #restart-button:hover {
+      cursor: pointer;
+      transform: translateY(-10px);
+      transition: 0.5s ease;
+    }
+
     /* Main board container styles */
     main {
       display: flex;
@@ -245,6 +314,22 @@
       flex: 1.5;
     }
 
+    /* Color to the keys */
+    .key.correct {
+      background-color: #538d4e;
+      color: white;
+    }
+
+    .key.present {
+      background-color: #b59f3b;
+      color: white;
+    }
+
+    .key.absent {
+      background-color: #3a3a3c;
+      color: white;
+    }
+
     /* Footer styles */
     footer {
       text-align: center;
@@ -263,8 +348,8 @@
   <!-- Website Header -->
   <header>
     <div class="left-buttons">
-      <button type="button" aria-label="Help">❔</button>
-      <button type="button" aria-label="Stats">📊</button>
+      <button type="button" id="help" aria-label="Help">❔</button>
+      <button type="button" id="stats" aria-label="Stats">📊</button>
     </div>
     
     <div class="app-name">
@@ -272,30 +357,144 @@
     </div>
 
     <div class="right-buttons">
-      <button type="button" aria-label="Toggle between dark and light mode">💡</button>
+      <button type="button" id="theme" aria-label="Toggle between dark and light mode">💡</button>
       <!-- About will display a dropdown menu with about, whoami, tactics and more -->
-      <button type="button" aria-label="Configurations">⚙️</button>
+      <button type="button" id="cfg" aria-label="Configurations">⚙️</button>
     </div>
   </header>
 
+  <!-- Modal container -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content" id="modal-content">
+      <button onclick="closeModal()">🗙</button>
+      <div id="modal-body">
+        <!-- Dinamic content will be inserted here -->
+      </div>
+    </div>
+  </div>
+
+
+  <div class="restart-button">
+    <button id="restart-button" style="display: none;" onclick="location.reload()">🔄</button>
+  </div>
+
+
   <!-- Main board area with rows for each guess attempt -->
   <main>
+
     <div class="game-board">
       <!-- Tiles will be generated here dynamically with js -->
     </div>
   </main>
-  
+ 
+
   <!-- On-screen keyboard for input, will be generated here with js-->
-  <div class="virtual-keyboard"></div>
+  <div class="virtual-keyboard data-status"></div>
+
 
   <footer>
     <small>Personal learning project, inspired by the term.ooo game — Developed by <a href="https://www.github.com/xyz-leo" target="_blank">xyz-leo</a></small>
   </footer>
 
+
   <script>
     // Constants for board size
     const NUM_ROWS = 6;
     const NUM_COLS = 5;
+    
+    // Track if the game have been ended
+    let gameOver = false;
+
+    // Modal
+    const modal = document.getElementById('modal');
+    const modalContent = document.getElementById('modal-content');
+    const modalBody = document.getElementById('modal-body');
+
+    modal.addEventListener('click', (event) => {
+      // Se o clique foi diretamente no fundo (modal), e não dentro da caixinha (modal-content)
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    // --- Header buttons ---
+
+    // Help button
+    const helpbtn = document.getElementById('help');
+
+    helpbtn.addEventListener('click', () => {
+      openModal(`<h2>Ajuda</h2><p>Como jogar o jogo LETRA...</p>`);
+    })
+
+    // Stats button
+    const statsbtn = document.getElementById('stats');
+
+    statsbtn.addEventListener('click', () => {
+      openModal(`<h2>Estatísticas</h2><p>Jogos vencidos: 4<br>Média: 4.5 tentativas</p>`);
+    })
+
+    // Theme dark/light mode change
+    const togglebtn = document.getElementById('theme');
+    const body = document.body;
+
+    togglebtn.addEventListener('click', () => {
+      body.classList.toggle("dark");
+      body.classList.toggle("light");
+    })
+    
+    // Configuration button
+    const cfgbtn = document.getElementById('cfg');
+
+    cfgbtn.addEventListener('click', () => {
+      openModal(`<h2>Configurações</h2><p><label>Tema automático <input type="checkbox"></label></p>`);
+    })
+
+
+    // words
+    const words = {
+      "easy": [
+        "amigo", "andar", "baile", "banco", "bicho", "botas", "brisa", "cabra",
+        "carta", "casal", "caixa", "carro", "certo", "chave", "cinza", "claro", "clima", "cofre",
+        "coisa", "cores", "cesta", "cinto", "campo", "dente", "dizer", "doido", "dólar", "feira",
+        "feliz", "ferro", "festa", "filho", "fotos", "folha", "forno", "fruta", "gente", "gosto",
+        "janela", "jogar", "leite", "letra", "limão", "limpo", "linha", "livro", "lugar", "limpo",
+        "mamãe", "macio", "meias", "meiga", "metro", "moeda", "morar", "mundo", "navio",
+        "noite", "norte", "nobre", "nuvem", "nadar", "olhos", "papai", "pacto", "pasta", "piano",
+        "ponto", "pular", "passe", "peixe", "pedra", "praia", "ponta", "risco", "risos", "roupa",
+        "rodar", "salto", "salve", "sonho", "suave", "tempo", "terra", "toque", "treno", "troca",
+        "tarde", "tocar", "troco", "velha", "venha", "vezes", "verde", "vento", "vapor", "baile",
+        "andar", "achar", "novas", "calma", "cerca", "manta", "renda"
+      ],
+
+      "normal": [
+        "ábaco", "abade", "algor", "âmago", "âmbar", "andar", "ápice", "arque", "baile",
+        "bardo", "boato", "bolor", "calar", "carro", "casal", "certo", "chave", "cível", "cinto",
+        "clima", "cofre", "coisa", "cores", "cruel", "dente", "débil", "dique", "dizer", "doido",
+        "dorso", "dueto", "égide", "ébrio", "enfim", "esgar", "exílio", "êxito", "êxodo", "fátuo",
+        "feliz", "fenda", "ferro", "festa", "filho", "forja", "forno", "fruir", "fotos", "folha",
+        "fruta", "fúria", "gente", "gênio", "gíria", "glifo", "glosa", "gosto", "grato", "hímen",
+        "hoste", "ídolo", "idílio", "ímpio", "ígneo", "índio", "íntia", "irado", "jazem", "jejum",
+        "jusso", "laudo", "leite", "letra", "lesma", "limão", "limbo", "linha", "livro", "lúmen",
+        "macio", "manhã", "manta", "matiz", "meiga", "meses", "metro", "meias", "mídia", "misto",
+        "moeda", "morar", "morro", "mundo", "nadar", "navio", "nível", "nítido", "nobre", "noite",
+        "norte", "nuvem", "ocaso", "ódio", "odiar", "olhos", "órfão", "ousar", "pacto", "pálio",
+        "papai", "pária", "passe", "pasta", "peixe", "pedra", "piano", "piche", "pólen", "ponto",
+        "praia", "pular", "quark", "relho", "renda", "reses", "rédea", "risco", "risos", "rodar",
+        "rouca", "rufar", "salto", "salve", "sarca", "sátira", "seita", "símio", "sonho", "sorna",
+        "sósia", "súcia", "súdito", "suave", "sulco", "tarde", "tédio", "tenaz", "tempo", "tênue",
+        "terra", "toque", "torvo", "tocar", "traço", "treno", "trupe", "troca", "troco", "tocar",
+        "turvo", "úbere", "úmido", "vapor", "vário", "velha", "venha", "veraz", "verde", "verbo",
+        "vento", "vezes", "vinco", "visão", "vício", "vulto", "zênite"
+      ]
+    };
+
+    // Random word from the list
+    const wordList = words.easy;
+
+    // Random target word
+    let targetWord = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase(); 
+
+
 
     // Reference to board container
     const board = document.querySelector(".game-board");
@@ -349,6 +548,7 @@
     // Track current position on board
     let currentRow = 0;
     let currentCol = 0;
+
     // Store letters typed for current guess
     const currentGuess = [];
 
@@ -371,6 +571,8 @@
 
     // Handle key inputs from both physical and virtual keyboards
     function handleKey(key) {
+      if (gameOver) return;
+
       if (key === "BACKSPACE" || key === "🔙") {
         deleteLetter();
       } else if (key === "ENTER" || key === "⏎" || key === "↵") {
@@ -379,6 +581,7 @@
         insertLetter(key);
       }
     }
+
 
     // Insert letter into current tile and advance column
     function insertLetter(letter) {
@@ -391,6 +594,7 @@
       currentGuess.push(letter);
       currentCol++;
     }
+
 
     // Remove letter from current tile and move back column
     function deleteLetter() {
@@ -405,26 +609,130 @@
       currentGuess.pop();
     }
 
+
+    // Open and close modal functions
+    function openModal(contentHTML) {
+      modalBody.innerHTML = contentHTML;
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+      modalBody.innerHTML = '';
+    }
+
+
+    // Restart button after the end of the game
+    function showRestartButton() {
+      const btn = document.getElementById("restart-button");
+      if (btn) btn.style.display = "block";
+    }
+
+    // Helper function to remove accentuation
+    function removeAccent(str) {
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    const letterUser = 'A'; // example, user typed A
+    const letterTarget = 'Ã'; // example, original letter in the word
+
+    // Consider the two letters equal
+    if (removeAccent(letterUser.toUpperCase()) === removeAccent(letterTarget.toUpperCase())) {
+    }
+
+
     // Submit the current guess for validation
     function submitGuess() {
-      if (currentGuess.length !== NUM_COLS) return; // Require full guess
+      if (currentGuess.length !== NUM_COLS) return;
 
-      const word = currentGuess.join("").toLowerCase();
-      console.log("Submitting:", word);
+      const guess = currentGuess.join("");
+      const tiles = document.querySelectorAll(`.tile[data-row="${currentRow}"]`);
 
-      // TODO: Validate word and update tile colors accordingly
+      const targetLetters = targetWord.split("");
+      const guessLetters = guess.split("");
+
+      // First step: mark green letters (the correct ones)
+      const result = Array(NUM_COLS).fill("absent"); // Can be: 'correct', 'present', 'absent'
+
+
+      for (let i = 0; i < NUM_COLS; i++) {
+        if (removeAccent(guessLetters[i].toUpperCase()) === removeAccent(targetLetters[i]?.toUpperCase())) {
+          result[i] = "correct";
+          targetLetters[i] = null; // Mark as used
+        }
+      }
+
+
+      // Second step: mark yellow letters (letters in the secret word)
+      for (let i = 0; i < NUM_COLS; i++) {
+        if (result[i] === "correct") continue;
+        
+        const index = targetLetters.findIndex(
+          (letter) => letter !== null &&
+          removeAccent(letter.toUpperCase()) === removeAccent(guessLetters[i].toUpperCase())
+        );
+
+        if (index !== -1) {
+          result[i] = "present";
+          targetLetters[index] = null; // Mark as used
+        }
+      }
+
+
+      // Apply CSS classes to the tiles
+      for (let i = 0; i < NUM_COLS; i++) {
+        const letter = guessLetters[i];
+        const status = result[i];
+
+
+        // Apply in the tile
+        tiles[i].classList.add(status);
+
+        if (status === "correct") {
+          tiles[i].textContent = targetWord[i];
+        }
+
+
+        // Apply in the virtual keyboard
+        const keyButton = document.querySelector(`.key[data-key="${letter}"]`);
+        if (keyButton) {
+          const oldClass = keyButton.dataset.status;
+
+          // Priority: correct > present > absent
+          const priority = { correct: 3, present: 2, absent: 1, undefined: 0 };
+          if (priority[status] > priority[oldClass]) {
+            keyButton.classList.remove("correct", "present", "absent");
+            keyButton.classList.add(status);
+            keyButton.dataset.status = status;
+          }
+        }
+      }
+
+        // Check win
+        if (guess === removeAccent(targetWord)) {
+          alert("You win!");
+          gameOver = true;
+          showRestartButton();
+          return;
+        }
+
 
       // Move to next row for next guess
       currentRow++;
       currentCol = 0;
       currentGuess.length = 0;
+
+      if (currentRow >= NUM_ROWS) {
+        alert(`Game over! The word was: ${targetWord}`);
+        gameOver = true;
+        showRestartButton();
+      }
+      
     }
 
-    // TODO: Sample word lists by difficulty (for future validation)
-    const words = {
-      easy: ["casa", "amigo", "paz", "vento", "nuvem", "livro", "praia", "terra", "nobre", "verde"],
-      normal: ["glifo", "jazem", "nível", "xenon", "plumo", "cruel", "ébrio", "âmago", "óbice", "quark"]
-    };
+    // DEBUG ONLY
+    const footer = document.querySelector('footer');
+    footer.innerHTML += targetWord;
   </script>
 </body>
 </html>
