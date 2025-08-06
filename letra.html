@@ -99,6 +99,8 @@
       margin: 0;
     }
 
+    /* --- Header --- */
+
     /* Header grid layout */
     header {
       display: grid;
@@ -144,6 +146,35 @@
       transition: 0.5s ease;
     }
 
+    /* Configuration button dropdown menu */
+    .config-dropdown {
+      position: absolute;
+      top: 8rem;
+      right: 3rem;
+      background-color: var(--color-tile);
+      border: 2px solid var(--color-border);
+      border-radius: 1rem;
+      padding: 1rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+      width: max-content;
+    }
+
+    .config-dropdown li {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .config-dropdown li:hover {
+      background-color: var(--color-accent);
+      color: #fff;
+      border-radius: 0.5rem;
+      transition: 0.5s ease;
+    }
+
+    /* --- Modal ---*/
+
     /* Modal Window to show messages */
     .modal {
       position: fixed;
@@ -177,7 +208,7 @@
       overflow: auto;
     }
 
-    /* It is hidden until JavaScript turns it to block */
+    /* Hidden content, until JavaScript turns it off */
     .hidden {
       display: none;
     }
@@ -193,7 +224,9 @@
       z-index: 100;
     }
 
-    /* restart button after end game */
+    /* --- Restart button ---*/
+
+    /* Appears after end game */
     .restart-button {
       display: flex;
       align-items: center;
@@ -210,6 +243,8 @@
       transform: translateY(-10px);
       transition: 0.5s ease;
     }
+
+    /* --- main, game board --- */
 
     /* Main board container styles */
     main {
@@ -273,6 +308,8 @@
       color: white;
     }
     
+    /* --- Virtual Keyboard --- */
+
     /* Virtual keyboard container */
     .virtual-keyboard {
       display: flex;
@@ -337,7 +374,7 @@
       color: white;
     }
 
-    /* Footer */
+    /* --- Footer --- */
     footer {
       text-align: center;
       padding: 1.5rem;
@@ -348,6 +385,8 @@
       color: var(--color-accent);
       cursor: pointer;
     }
+
+    /* --- Media (responsiveness) --- */
 
     /* Responsiveness to mobile devices */
     @media (max-width: 600px) {
@@ -440,7 +479,6 @@
       font-size: clamp(2.5rem, 5vw, 3.5rem);
     }
   }
-
   </style>
 </head>
 
@@ -457,9 +495,17 @@
     </div>
 
     <div class="right-buttons">
+      <!-- Toggle between light and dark mode -->
       <button type="button" id="theme" aria-label="Toggle between dark and light mode">💡</button>
-      <!-- About will display a dropdown menu with about, whoami, tactics and more -->
+      <!-- Configuration button with dropdown menu list -->
       <button type="button" id="cfg" aria-label="Configurations">⚙️</button>
+      <div class="config-dropdown hidden" id="config-dropdown">
+        <ul>
+          <li data-action="clearStats">Resetar estatísticas</li>
+          <li data-action="showAbout">Sobre o projeto</li>
+          <li data-action="showTipsModal">Dicas para vencer</li>
+        </ul>
+      </div>
     </div>
   </header>
 
@@ -553,6 +599,7 @@
 `);
     })
 
+
     // Stats button
     const statsbtn = document.getElementById('stats');
 
@@ -565,6 +612,7 @@
 <p><strong>Tentativas: ${getAttemptsCount()}<strong></p>
 `);
     })
+
 
     // Theme dark/light mode change
     const togglebtn = document.getElementById('theme');
@@ -600,12 +648,37 @@
       }
     });
     
+
     // Configuration button
     const cfgbtn = document.getElementById('cfg');
-
+    const cfgDropdown = document.getElementById('config-dropdown');
+      
     cfgbtn.addEventListener('click', () => {
-      openModal(`<h2>Configurações</h2><p><label>Tema automático <input type="checkbox"></label></p>`);
-    })
+      cfgDropdown.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!cfgbtn.contains(e.target) && !cfgDropdown.contains(e.target)) {
+        cfgDropdown.classList.add('hidden');
+      }
+    });
+
+    // Event delegation to the dropdown menu list items
+    cfgDropdown.addEventListener('click', (e) => {
+      const action = e.target.dataset.action;
+
+      switch (action) {
+        case 'clearStats':
+          clearStats();
+          break;
+        case 'showAbout':
+          //showAboutModal();
+          break;
+        case 'showTipsModal':
+          //showTipsModal();
+          break;
+      }
+    });
 
 
     // words
@@ -970,6 +1043,12 @@
       saveStats(stats);
     }
 
+
+    // Clear stats (option in the configuration button dropdown menu)
+    function clearStats() {
+      localStorage.removeItem('gameStats');
+      location.reload();
+    }
 
     // DEBUG ONLY
     const footer = document.querySelector('footer');
