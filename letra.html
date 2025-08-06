@@ -606,10 +606,12 @@
     statsbtn.addEventListener('click', () => {
       openModal(`
 <h2>Estatísticas</h2><br>
-<p><strong>Partidas jogadas: ${getGamesPlayed()}<strong><p>
-<p><strong>Partidas vencidas: ${getCorrectWordsCount()}<strong><p>
-<p><strong>Partidas perdidas: ${getLostGamesCount()}<strong></p>
-<p><strong>Tentativas: ${getAttemptsCount()}<strong></p>
+<h3>Partidas jogadas: ${getGamesPlayed()}</h3><br>
+<h3>Partidas vencidas: ${getCorrectWordsCount()}</h3><br>
+<h3>Partidas perdidas: ${getLostGamesCount()}</h3><br>
+<h3>Tentativas: ${getAttemptsCount()}</h3><br>
+<h3>Taxa de vitórias: ${getWinRate().toFixed(2)}%</h3><br>
+<h3>Média de tentativas para vencer: ${getAvgAttemptsToWin().toFixed(2)}</h3>
 `);
     })
 
@@ -977,7 +979,7 @@
         // Check win
         if (guess === removeAccent(targetWord)) {
           alert("You win!");
-          incrementCorrectWords();
+          incrementCorrectWords(currentRow + 1);
           gameOver = true;
           showRestartButton();
           return;
@@ -1011,6 +1013,7 @@
           attemptsCount: 0,
           lostGames: 0,
           gamesPlayed: 0,
+          totalAttemptsToWin: 0,
         };
       }
       return JSON.parse(statsStr);
@@ -1027,9 +1030,10 @@
     }
 
     // Function to increment the counter if the player won
-    function incrementCorrectWords() {
+    function incrementCorrectWords(attemptsUsed) {
       const stats = getStats();
       stats.correctWords++;
+      stats.totalAttemptsToWin = (stats.totalAttemptsToWin || 0) + attemptsUsed;
       saveStats(stats);
     }
 
@@ -1059,6 +1063,7 @@
 
 
     // Lost games (game over)
+    // Could be gamesPlayed - correctWords
     function getLostGamesCount() {
       return getStats().lostGames;
     }
@@ -1067,6 +1072,26 @@
       const stats = getStats();
       stats.lostGames++;
       saveStats(stats);
+    }
+
+    function incrementTotalAttemptsToWin(attemptsUsed) {
+      const stats = getStats();
+      stats.totalAttemptsToWin += attemptsUsed;
+      saveStats(stats);
+    }
+
+    // Win rate - read only - separation of concerns
+    function getWinRate() {
+      const stats = getStats();
+      if (stats.gamesPlayed === 0) return 0;
+      return (stats.correctWords / stats.gamesPlayed) * 100;
+    }
+
+    // Average attempts to win - totalAttemptsToWin / correctWords
+    function getAvgAttemptsToWin() {
+      const stats = getStats();
+      if (!stats.correctWords || stats.correctWords === 0) return 0;
+      return stats.totalAttemptsToWin / stats.correctWords;
     }
 
 
