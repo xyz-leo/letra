@@ -390,95 +390,99 @@
 
     /* Responsiveness to mobile devices */
     @media (max-width: 600px) {
-    .game-board {
-      width: clamp(250px, 80vw, 450px);
-    }
+      body {
+        min-height: 100dvh;
+      }
 
-    .restart-button {
-      margin-top: clamp(1rem, 4vw, 2rem);
-    }
+      .game-board {
+        width: clamp(250px, 80vw, 450px);
+      }
 
-    #restart-button {
-      font-size: clamp(2.5rem, 7vw, 3.5rem);
-    }
+      .restart-button {
+        margin-top: clamp(1rem, 4vw, 2rem);
+      }
 
-    footer {
-      padding: clamp(0.5rem, 2vw, 1rem);
-    }
+      #restart-button {
+        font-size: clamp(2.5rem, 7vw, 3.5rem);
+      }
 
-    header {
-      padding: clamp(1.5rem, 4vw, 2rem) clamp(1.5rem, 5vw, 3rem);
-    }
+      footer {
+        padding: clamp(0.5rem, 2vw, 1rem);
+      }
 
-    .left-buttons button,
-    .right-buttons button {
-      font-size: clamp(1.4rem, 5vw, 2rem);
-      border: solid 2px #ccc;
-    }
+      header {
+        padding: clamp(1.5rem, 4vw, 2rem) clamp(1.5rem, 5vw, 3rem);
+      }
 
-    .app-name {
-      font-size: clamp(1.2rem, 4vw, 1.4rem);
-    }
+      .left-buttons button,
+      .right-buttons button {
+        font-size: clamp(1.4rem, 5vw, 2rem);
+        border: solid 2px #ccc;
+      }
 
-    .modal-content {
-      font-size: clamp(1.6rem, 4vw, 2rem);
-      min-height: 400px;
-      min-width: 300px;
-      max-width: 350px;
-      max-height: 600px;
-    }
+      .app-name {
+        font-size: clamp(1.2rem, 4vw, 1.4rem);
+      }
 
-    .modal-content button {
-      font-size: clamp(2.5rem, 6vw, 3.5rem);
+      .modal-content {
+        font-size: clamp(1.6rem, 4vw, 2rem);
+        min-height: 400px;
+        min-width: 300px;
+        max-width: 350px;
+        max-height: 600px;
+      }
+
+      .modal-content button {
+        font-size: clamp(2.5rem, 6vw, 3.5rem);
+      }
     }
-  }
 
     /* Applied when the device is horizontal */
     @media (max-width: 916px) and (max-height: 500px) and (orientation: landscape) {
-    .tile {
-      font-size: clamp(1.2rem, 3vw, 1.6rem);
-    }
+      .tile {
+        font-size: clamp(1.2rem, 3vw, 1.6rem);
+      }
 
-    .game-board {
-      width: clamp(180px, 25vw, 300px);
-      margin-top: 0;
-    }
+      .game-board {
+        width: clamp(180px, 25vw, 300px);
+        margin-top: 0;
+      }
 
-    header {
-      padding: clamp(1rem, 4vw, 2rem) auto;
-    }
+      header {
+        padding: clamp(1rem, 4vw, 2rem) auto;
+      }
 
-    header .app-name {
-      font-size: clamp(1.2rem, 4vw, 1.6rem);
-    }
+      header .app-name {
+        font-size: clamp(1.2rem, 4vw, 1.6rem);
+      }
 
-    .left-buttons button,
-    .right-buttons button {
-      font-size: clamp(1.4rem, 5vw, 2rem);
-      border: solid 2px #ccc;
-    }
+      .left-buttons button,
+      .right-buttons button {
+        font-size: clamp(1.4rem, 5vw, 2rem);
+        border: solid 2px #ccc;
+      }
 
-    #restart-button {
-      font-size: clamp(2rem, 6vw, 3rem);
-    }
+      #restart-button {
+        font-size: clamp(2rem, 6vw, 3rem);
+      }
 
-    .virtual-keyboard {
-      width: clamp(200px, 70vw, 600px);
-      margin: clamp(0.5rem, 2vw, 1rem) auto;
-    }
+      .virtual-keyboard {
+        width: clamp(200px, 70vw, 600px);
+        margin: clamp(0.5rem, 2vw, 1rem) auto;
+      }
 
-    .modal-content {
-      font-size: clamp(1.2rem, 3.5vw, 1.6rem);
-      max-width: 350px;
-      max-height: 500px;
-    }
+      .modal-content {
+        font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+        max-width: 350px;
+        max-height: 500px;
+      }
 
-    .modal-content button {
-      top: clamp(2rem, 5vw, 4.5rem);
-      left: 90%;
-      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      .modal-content button {
+        top: clamp(2rem, 5vw, 4.5rem);
+        left: 90%;
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+      }
     }
-  }
   </style>
 </head>
 
