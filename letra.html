@@ -672,10 +672,36 @@
           clearStats();
           break;
         case 'showAbout':
-          //showAboutModal();
+          openModal(`
+<h2>LETRA</h2>
+<p><strong>LETRA</strong> é um jogo minimalista de adivinhação de palavras de 5 letras, inspirado no site <a href="https://term.ooo/" target=_blank style="color: #3ecf8e;">term.ooo</a>. O jogador tem seis tentativas para descobrir a palavra secreta.</p><br>
+<h2>Detalhes técnicos</h2>
+<p>A interface foi construída com <code>HTML</code>, <code>CSS</code> e <code>JavaScript</code> puros, sem uso de bibliotecas ou framework externos. Todo o projeto está contido em um único arquivo <code>.html</code>, o que permite que ele funcione completamente offline, sem necessidade de servidor ou instalação. Essa abordagem reforça a proposta de simplicidade e portabilidade.</p><br>
+<h2>Meu objetivo</h2>
+<p>O principal objetivo deste projeto foi criar algo divertido que também servisse como exercício prático para refinar minhas habilidades em programação front-end.</p><br>
+<h2>Meu GitHub</h2>
+<a href="https://github.com/xyz-leo" target=_blank style="color: #3ecf8e;">xyz-leo</a>
+`);
           break;
         case 'showTipsModal':
-          //showTipsModal();
+          openModal(`
+<h2>Dicas para Vencer</h2>
+<p>Algumas estratégias podem aumentar muito suas chances de acertar a palavra oculta em menos tentativas:</p>
+
+<ul>
+  <li><strong>1. Comece com uma palavra forte:</strong> Use palavras iniciais que contenham letras comuns da língua portuguesa, como todas as vogais e consoantes <em style="color: #3ecf8e;">A, E, I, O, U, R, S, T, L...</em>. Exemplos: <code style="color: #3ecf8e;">IDEAL</code>, <code style="color: #3ecf8e">ACIDO</code>, <code style="color: #3ecf8e;">AUREO</code>.</li>
+
+  <li><strong>2. Evite repetir letras no começo:</strong> Tente usar 5 letras diferentes nas primeiras tentativas. Isso te ajuda a revelar mais opções e eliminar letras rapidamente.</li>
+
+  <li><strong>3. Elimine letras com lógica:</strong> Se uma letra já apareceu como <span style="color:#444;">cinza</span> em várias posições, evite usá-la novamente.</li>
+
+  <li><strong>4. Use palavras de teste:</strong> Se estiver em dúvida, insira uma palavra apenas para testar letras novas, mesmo que ache que não é a resposta final.</li>
+
+  <li><strong>5. Jogue com calma:</strong> Pense antes de tentar. Use as pistas anteriores para guiar cada nova palavra. A pressa leva a erros!</li>
+  
+  <li><strong>6. Evite palavras inventadas:</strong> Para manter o jogo divertido e o desafio justo, evite digitar palavras aleatórias ou inexistentes apenas para testar letras, já que este jogo não faz a verificação no dicionário.</li>
+</ul>
+`)
           break;
       }
     });
