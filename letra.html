@@ -173,6 +173,27 @@
       transition: 0.5s ease;
     }
 
+    /* Informative message */
+    .msgBox {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 1rem;
+      margin: 0 auto;
+      margin-bottom: 1rem;
+      padding: 1rem 5rem;
+      background-color: var(--color-accent);
+      font-size: 1.8rem;
+      transition: opacity 0.6s ease-in-out;
+      z-index: 1000;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    #msgBox.show {
+      opacity: 1;
+    }
+
     /* --- Modal ---*/
 
     /* Modal Window to show messages */
@@ -315,7 +336,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.5rem;
+      gap: 1rem;
       padding: 2rem 1rem;
       width: min(95vw, 700px);
       max-width: 700px;
@@ -327,7 +348,7 @@
     .keyboard-row {
       display: flex;
       justify-content: center;
-      gap: 0.4rem;
+      gap: 1rem;
       width: 100%;
     }
 
@@ -437,7 +458,7 @@
       }
 
       .virtual-keyboard {
-        margin-bottom: 8rem;
+        margin-bottom: 6rem;
       }
     }
 
@@ -516,6 +537,9 @@
       </div>
     </div>
   </header>
+  
+  <!-- Informative message below the header, triggered by JavaScript -->
+  <div class="msgBox hidden" id="msgBox">essa palavra não é aceita</div>
 
   <!-- Modal container -->
   <div id="modal" class="modal hidden">
@@ -557,6 +581,7 @@
     
     // Track if the game have been ended
     let gameOver = false;
+
 
     // Modal
     const modal = document.getElementById('modal');
@@ -986,7 +1011,7 @@
 
         // Check win
         if (guess === removeAccent(targetWord)) {
-          alert("You win!");
+          showMessage('You win!', 10000)
           incrementCorrectWords(currentRow + 1);
           gameOver = true;
           showRestartButton();
@@ -999,7 +1024,7 @@
       currentGuess.length = 0;
 
       if (currentRow >= NUM_ROWS) {
-        alert(`Game over! A palavra era: ${targetWord}`);
+        showMessage(`Game over! A palavra era: ${targetWord}`, 10000)
         gameOver = true;
         incrementLostGames();
         showRestartButton();
@@ -1108,6 +1133,26 @@
       localStorage.removeItem('gameStats');
       location.reload();
     }
+
+
+    // Message box with fade in/out
+    function showMessage(text, duration = 3000) {
+      const box = document.getElementById('msgBox');
+      box.textContent = text;
+      box.classList.remove('hidden');
+      
+      void box.offsetWidth;
+
+      box.classList.add('show');
+
+      setTimeout(() => {
+        box.classList.remove('show');
+        setTimeout(() => {
+          box.classList.add('hidden');
+        }, 600); // fade-out before hide
+      }, duration);
+    }
+
 
     // DEBUG ONLY
     const footer = document.querySelector('footer');
