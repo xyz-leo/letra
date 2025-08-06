@@ -435,6 +435,10 @@
       .modal-content button {
         font-size: clamp(2.5rem, 6vw, 3.5rem);
       }
+
+      .virtual-keyboard {
+        margin-bottom: 8rem;
+      }
     }
 
     /* Applied when the device is horizontal */
@@ -516,7 +520,7 @@
   <!-- Modal container -->
   <div id="modal" class="modal hidden">
     <div class="modal-content" id="modal-content">
-      <button onclick="closeModal()">🗙</button>
+      <button onclick="closeModal()">✖️</button>
       <div id="modal-body">
         <!-- Dinamic content will be inserted here -->
       </div>
