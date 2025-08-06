@@ -13,13 +13,14 @@
 - Keyboard and tile interaction integrated.
 - Responsive layout.
 
-*(Note: This version may use embedded CSS/JS inside `index.html` for simplicity.)*
+*(Note: This version may use embedded CSS/JS inside `letra.html` for simplicity.)*
 
 ## How to Run
 
-1. Clone the repository or simply download the index.html.
-2. Open `index.html` directly in a browser.
-3. Start typing with the on-screen keyboard.
+1. Clone the repository or simply download the letra.html.
+2. If the file letra.html is downloaded as letra.txt, simply rename it back to letra.html and open it with a Browser.
+3. Open `letra.html` directly in a browser.
+4. Start typing with the on-screen keyboard.
 
 No build tools, server, or dependencies required.
 
