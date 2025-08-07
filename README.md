@@ -3,6 +3,13 @@
 **LETRA** is a minimalist 5-letter word guessing game. The player has six attempts to guess the hidden word. The interface is built with pure HTML, CSS, and JavaScript, with no external libraries.
 
 
+## Play Online
+
+You can play the game directly via GitHub Pages:
+
+=> [https://xyz-leo.github.io/letra/](https://xyz-leo.github.io/letra/)
+
+
 <img width="523" height="794" alt="LETRA_Screenshot" src="https://github.com/user-attachments/assets/ae278083-b6ba-4d80-84be-48c248518a19" />
 
 
