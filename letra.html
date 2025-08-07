@@ -195,55 +195,72 @@
     }
 
     /* --- Modal ---*/
-
-    /* Modal Window to show messages */
+    /* Modal Overlay */
     .modal {
       position: fixed;
+      top: 0;
+      left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0,0,0,0.7);
+      background-color: rgba(0, 0, 0, 0.6); /* semi transparent background */
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 999;
+      backdrop-filter: blur(4px); /* background with blur */
     }
 
-    /* The square that shows the modal content */
+    /* Modal Content Box */
     .modal-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: rgba(171, 161, 64, 0.8);
-      color: #f1f1f1;
-      font-size: 2rem;
-      padding: 4rem 4rem;
-      line-height: 3.5rem;
-      border-radius: 8px;
-      width: 70%;
-      height: 70%;
-      min-height: 400px;
-      min-width: 400px;
-      max-width: 900px;
-      max-height: 900px;
-      aspect-ratio: 1 / 1; /* Square form modal */
-      overflow: auto;
+      position: relative;
+      background: #1e1e1e;
+      color: #f9f9f9;
+      font-size: 1.6rem;
+      padding: 3rem 4rem;
+      line-height: 2.8rem;
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: fadeInScale 0.3s ease-out;
     }
 
-    /* Hidden content, until JavaScript turns it off */
+    /* Smooth opening animation */
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Close Button */
+    .modal-content button {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.5rem;
+      background: none;
+      border: none;
+      font-size: 2.5rem;
+      color: #ff4d4d;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .modal-content button:hover {
+      transform: scale(1.2);
+    }
+
+    /* Hidden state */
     .hidden {
       display: none;
     }
 
-    /* X button to close the modal. We can also close by clicking away from the modal content */
-    .modal-content button {
-      position: fixed;
-      top: 8rem;
-      left: 90%;
-      font-size: 5rem;
-      color: crimson;
-      cursor: pointer;
-      z-index: 100;
-    }
 
     /* --- Restart button ---*/
 
@@ -256,7 +273,7 @@
     }
 
     #restart-button {
-      font-size: 5rem;
+      font-size: 3.5rem;
     }
 
     #restart-button:hover {
@@ -329,6 +346,35 @@
       color: white;
     }
     
+    /* Tile animation */
+    @keyframes flip-tile {
+      0% {
+        transform: rotateY(0deg); /* Original position */
+      }
+      50% {
+        transform: rotateY(90deg); /* Mid rotation */
+        background-color: var(--color-tile);
+        border-color: var(--color-border);
+        color: transparent;
+      }
+      50.01% {
+        /* To prevent flickering and allow class switching mid-flip */
+        background-color: inherit;
+        border-color: inherit;
+      }
+      100% {
+        transform: rotateY(0deg); /* Original Position */
+      }
+    }
+
+    .tile.correct,
+    .tile.present,
+    .tile.absent {
+      animation: flip-tile 0.6s ease;
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+    }
+
     /* --- Virtual Keyboard --- */
 
     /* Virtual keyboard container */
@@ -407,6 +453,39 @@
       cursor: pointer;
     }
 
+    /* --- Stats --- */
+    .stats-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      align-items: flex-end;
+      margin-top: 2rem;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1.5rem 2rem;
+      border-radius: 1rem;
+      min-width: 100px;
+    }
+
+    .stat-value {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .stat-label {
+      font-size: 1.3rem;
+      margin-top: 0.5rem;
+      color: #ddd;
+    }
+
+
     /* --- Media (responsiveness) --- */
 
     /* Responsiveness to mobile devices */
@@ -417,10 +496,6 @@
 
       .game-board {
         width: clamp(250px, 80vw, 450px);
-      }
-
-      .restart-button {
-        margin-top: clamp(1rem, 4vw, 2rem);
       }
 
       #restart-button {
@@ -533,6 +608,7 @@
           <li data-action="clearStats">Resetar estatísticas</li>
           <li data-action="showAbout">Sobre o projeto</li>
           <li data-action="showTipsModal">Dicas para vencer</li>
+          <li id="toggleDifficultyBtn" data-action="toggleDifficulty">Alternar dificuldade:</li>
         </ul>
       </div>
     </div>
@@ -638,14 +714,35 @@
 
     statsbtn.addEventListener('click', () => {
       openModal(`
-<h2>Estatísticas</h2><br>
-<h3>Partidas jogadas: ${getGamesPlayed()}</h3><br>
-<h3>Partidas vencidas: ${getCorrectWordsCount()}</h3><br>
-<h3>Partidas perdidas: ${getLostGamesCount()}</h3><br>
-<h3>Tentativas: ${getAttemptsCount()}</h3><br>
-<h3>Taxa de vitórias: ${getWinRate().toFixed(2)}%</h3><br>
-<h3>Média de tentativas para vencer: ${getAvgAttemptsToWin().toFixed(2)}</h3>
-`);
+        <h2 style="margin-bottom: 2rem;">Estatísticas</h2>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value">${getGamesPlayed()}</div>
+            <div class="stat-label">Jogadas</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">${getCorrectWordsCount()}</div>
+            <div class="stat-label">Vitórias</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">${getLostGamesCount()}</div>
+            <div class="stat-label">Derrotas</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">${getAttemptsCount()}</div>
+            <div class="stat-label">Tentativas</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">${getWinRate().toFixed(2)}%</div>
+            <div class="stat-label">Winrate</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">${getAvgAttemptsToWin().toFixed(2)}</div>
+            <div class="stat-label">Média Tentativas</div>
+          </div>
+        </div>
+      `);
     })
 
 
@@ -668,7 +765,6 @@
         body.classList.remove('light');
       }
     }
-
     applyTheme();
 
     togglebtn.addEventListener('click', () => {
@@ -738,7 +834,24 @@
 </ul>
 `)
           break;
-      }
+
+        case 'toggleDifficulty':
+          // Toggle between easy and normal difficulty
+          currentDifficulty = currentDifficulty === 'easy' ? 'normal' : 'easy';
+
+          // Save the new difficulty to the localStorage
+          localStorage.setItem('difficulty', currentDifficulty);
+
+          // Update the difficulty text
+          updateDifficultyText();
+
+          // Updates the targetWord
+          targetWord = getRandomWord(currentDifficulty);
+
+          // Informaive message
+          showMessage(`Dificuldade alternou para: ${currentDifficulty}. A nova palavra foi selecionada!`, 5000);
+          break;
+        }
     });
 
 
@@ -749,7 +862,7 @@
         "carta", "casal", "caixa", "carro", "certo", "chave", "cinza", "claro", "clima", "cofre",
         "coisa", "cores", "cesta", "cinto", "campo", "dente", "dizer", "doido", "dólar", "feira",
         "feliz", "ferro", "festa", "filho", "fotos", "folha", "forno", "fruta", "gente", "gosto",
-        "janela", "jogar", "leite", "letra", "limão", "limpo", "linha", "livro", "lugar", "limpo",
+        "jogar", "leite", "letra", "limão", "limpo", "linha", "livro", "lugar", "limpo",
         "mamãe", "macio", "meias", "meiga", "metro", "moeda", "morar", "mundo", "navio",
         "noite", "norte", "nobre", "nuvem", "nadar", "olhos", "papai", "pacto", "pasta", "piano",
         "ponto", "pular", "passe", "peixe", "pedra", "praia", "ponta", "risco", "risos", "roupa",
@@ -772,22 +885,35 @@
         "norte", "nuvem", "ocaso", "ódio", "odiar", "olhos", "órfão", "ousar", "pacto", "pálio",
         "papai", "pária", "passe", "pasta", "peixe", "pedra", "piano", "piche", "pólen", "ponto",
         "praia", "pular", "quark", "relho", "renda", "reses", "rédea", "risco", "risos", "rodar",
-        "rouca", "rufar", "salto", "salve", "sarca", "sátira", "seita", "símio", "sonho", "sorna",
-        "sósia", "súcia", "súdito", "suave", "sulco", "tarde", "tédio", "tenaz", "tempo", "tênue",
+        "rouca", "rufar", "salto", "salve", "sarca", "seita", "símio", "sonho", "sorna",
+        "sósia", "súcia", "suave", "sulco", "tarde", "tédio", "tenaz", "tempo", "tênue",
         "terra", "toque", "torvo", "tocar", "traço", "treno", "trupe", "troca", "troco", "tocar",
         "turvo", "úbere", "úmido", "vapor", "vário", "velha", "venha", "veraz", "verde", "verbo",
-        "vento", "vezes", "vinco", "visão", "vício", "vulto", "zênite"
+        "vento", "vezes", "vinco", "visão", "vício", "vulto", 
       ]
     };
 
+    let currentDifficulty = localStorage.getItem('difficulty') || 'easy';
+    
+    let targetWord = getRandomWord(currentDifficulty);
 
-    // Random word from the list
-    const wordList = words.easy;
+    function getRandomWord() {
+      const list = words[currentDifficulty];
+      return list[Math.floor(Math.random() * list.length)].toUpperCase();
+    }
 
-    // Random target word (secret word of the match)
-    let targetWord = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase(); 
+
+    const toggleDifficultyBtn = document.getElementById('toggleDifficultyBtn');
+
+    // Function to update the text of the button with the current difficulty
+    function updateDifficultyText() {
+      toggleDifficultyBtn.textContent = `Alternar dificuldade: ${currentDifficulty}`;
+    }
+// Init when JS loads
+updateDifficultyText();
 
 
+    // -- Board --
     // Reference to board container
     const board = document.querySelector(".game-board");
 
@@ -1024,7 +1150,7 @@
       currentGuess.length = 0;
 
       if (currentRow >= NUM_ROWS) {
-        showMessage(`Game over! A palavra era: ${targetWord}`, 10000)
+        showMessage(`Game over! Palavra: ${targetWord}`, 10000)
         gameOver = true;
         incrementLostGames();
         showRestartButton();
