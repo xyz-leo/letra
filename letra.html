@@ -6,6 +6,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Letra — Jogo de palavras offline</title>
+
+  <!-- Cool trick -->
+  <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><rect width='64' height='64' fill='%230052cc' rx='12' ry='12'/><text x='32' y='42' font-family='Segoe UI, Tahoma, Geneva, Verdana, sans-serif' font-size='36' fill='white' font-weight='bold' text-anchor='middle' dominant-baseline='middle'>L</text></svg>" type="image/svg+xml" />
+
   <style>
     /* Light mode color variables */
     :root {
@@ -608,7 +612,8 @@
           <li data-action="clearStats">Resetar estatísticas</li>
           <li data-action="showAbout">Sobre o projeto</li>
           <li data-action="showTipsModal">Dicas para vencer</li>
-          <li id="toggleDifficultyBtn" data-action="toggleDifficulty">Alternar dificuldade:</li>
+          <li id="toggleDifficultyBtn" data-action="toggleDifficulty"></li>
+          <li id="toggleLangBtn" data-action="toggleLang"></li>
         </ul>
       </div>
     </div>
@@ -665,7 +670,6 @@
     const modalBody = document.getElementById('modal-body');
 
     modal.addEventListener('click', (event) => {
-      // Se o clique foi diretamente no fundo (modal), e não dentro da caixinha (modal-content)
       if (event.target === modal) {
         closeModal();
       }
@@ -849,103 +853,194 @@
           localStorage.setItem('difficulty', currentDifficulty);
 
           // Update the difficulty text
-          updateDifficultyText();
+          updateDifficultyLiText();
 
           // Updates the targetWord
-          targetWord = getRandomWord(currentDifficulty);
+          targetWord = getRandomWord(currentDifficulty, currentLang);
 
           // Informaive message
           showMessage(`Dificuldade alternou para: ${currentDifficulty}. A nova palavra foi selecionada!`, 5000);
+          break;
+
+        case 'toggleLang':
+          // Toggle between brazilian portuguese or american english
+          currentLang = currentLang === 'PtBr' ? 'EnUs' : 'PtBr';
+
+          localStorage.setItem('lang', currentLang);
+
+          updateLangLiText();
+
+          targetWord = getRandomWord(currentDifficulty, currentLang);
+
+          showMessage(`Idioma alterado para: ${currentLang}. Nova palavra selecionada!`);
           break;
         }
     });
 
 
-    // words
-    const wordsPtBr = {
-      "easy": [
-        "amigo", "baile", "banco", "bicho", "botas", "brisa", "cabra",
-        "carta", "casal", "caixa", "carro", "certo", "chave", "cinza", "claro", "clima", "cofre",
-        "coisa", "cores", "cesta", "cinto", "campo", "dente", "dizer", "doido", "dólar", "feira",
-        "feliz", "ferro", "festa", "filho", "fotos", "folha", "forno", "fruta", "gente", "gosto",
-        "jogar", "leite", "letra", "limão", "limpo", "linha", "livro", "lugar", "limpo",
-        "mamãe", "macio", "meias", "meiga", "metro", "moeda", "morar", "mundo", "navio",
-        "noite", "norte", "nobre", "nuvem", "nadar", "olhos", "papai", "pacto", "pasta", "piano",
-        "ponto", "pular", "passe", "peixe", "pedra", "praia", "ponta", "risco", "risos", "roupa",
-        "rodar", "salto", "salve", "sonho", "suave", "tempo", "terra", "toque", "treno", "troca",
-        "tarde", "tocar", "troco", "velha", "venha", "vezes", "verde", "vento", "vapor", 
-        "andar", "achar", "novas", "calma", "cerca", "manta", "renda"
-      ],
+    const wordsList = {
+      PtBr: {
+        "easy": [
+          "amigo", "baile", "banco", "bicho", "botas", "brisa", "cabra",
+          "carta", "casal", "caixa", "carro", "certo", "chave", "cinza", "claro", "clima", "cofre",
+          "coisa", "cores", "cesta", "cinto", "campo", "dente", "dizer", "doido", "dólar", "feira",
+          "feliz", "ferro", "festa", "filho", "fotos", "folha", "forno", "fruta", "gente", "gosto",
+          "jogar", "leite", "letra", "limão", "limpo", "linha", "livro", "lugar", "limpo",
+          "mamãe", "macio", "meias", "meiga", "metro", "moeda", "morar", "mundo", "navio",
+          "noite", "norte", "nobre", "nuvem", "nadar", "olhos", "papai", "pacto", "pasta", "piano",
+          "ponto", "pular", "passe", "peixe", "pedra", "praia", "ponta", "risco", "risos", "roupa",
+          "rodar", "salto", "salve", "sonho", "suave", "tempo", "terra", "toque", "treno", "troca",
+          "tarde", "tocar", "troco", "velha", "venha", "vezes", "verde", "vento", "vapor", 
+          "andar", "achar", "novas", "calma", "cerca", "manta", "renda"
+        ],
 
-      "normal": [
-        "ábaco", "abade", "algor", "âmago", "âmbar", "andar", "ápice", "arque", "baile",
-        "bardo", "boato", "bolor", "banco", "calar", "carro", "casal", "certo", "chave", "cível", "cinto",
-        "clima", "cofre", "coisa", "cosmo", "cores", "cruel", "dente", "débil", "dique", "dizer", "doido",
-        "dorso", "dueto", "égide", "ébrio", "enfim", "esgar", "êxito", "êxodo", "fátuo",
-        "feliz", "fenda", "ferro", "festa", "filho", "forja", "forno", "fruir", "fotos", "folha",
-        "fruta", "fúria", "gente", "gênio", "gíria", "glifo", "glosa", "gosto", "grato",
-        "hoste", "ídolo", "ímpio", "ígneo", "índio", "íntia", "irado", "jazem", "jejum",
-        "jusso", "laudo", "leite", "letra", "lesma", "limão", "limbo", "linha", "livro", "lúmen",
-        "macio", "manhã", "manta", "matiz", "meiga", "meses", "metro", "meias", "mídia", "misto",
-        "moeda", "morar", "morro", "mundo", "nadar", "navio", "nível", "nobre", "noite", "norte",
-        "nuvem", "ocaso", "ódio", "odiar", "olhos", "órfão", "ousar", "pacto", "pálio", "papai",
-        "pária", "passe", "pasta", "peixe", "pedra", "piano", "piche", "pólen", "ponto", "praia",
-        "pular", "quark", "relho", "renda", "rodas", "reses", "rédea", "risco", "risos", "rodar", "rouca",
-        "rufar", "salto", "salve", "sarca", "seita", "símio", "sonho", "sorna", "sósia", "súcia",
-        "suave", "sulco", "tarde", "tédio", "tenaz", "tempo", "tênue", "terra", "toque", "torvo",
-        "tocar", "traço", "treno", "trupe", "troca", "troco", "turvo", "úbere", "úmido",
-        "vapor", "vário", "velha", "venha", "veraz", "verde", "verbo", "vento", "vezes", "vinco",
-        "visão", "vício", "vulto", "abriu", "acaso", "acima", "acude", "adeus", "adult",
-        "afiar", "agito", "agora", "alias", "aliar", "altar", "anelo", "anexo", "anoes", "antes",
-        "antro", "apito", "apodo", "arado", "aroma", "artef", "atado", "atual", "aviso", "axial",
-        "bazar", "beijo", "bento", "bicho", "bizar", "bloco", "bocal", "bossa", "botar", "brasa",
-        "bravo", "breve", "brisa", "bruto", "bulbo", "burro", "cacho", "cacto", "caixa", "calma",
-        "canso", "capaz", "capim", "carga", "carne", "casta", "ceder", "cegar", "chato", "choro",
-        "civil", "claro", "clico", "cobre", "coito", "colhe", "comer", "conto", "copas", "coral",
-        "corpo", "credo", "criar", "crise", "curto", "danar", "dança", "dardo", "desce", "disco",
-        "dobro", "doces", "dogma", "dores", "dorme", "drama", "duelo", "eixos", "elite",
-        "encar", "entra", "envio", "erram", "etapa", "etico", "evite", "exato",
-        "exibe", "falha", "falso", "farol", "fatal", "fauno", "fazer", "feira", "feroz", "feudo",
-        "ficar", "finta", "firma", "fixar", "fobia", "folga", "forca", "fosse", "fraco", "freio",
-        "fundo", "ganho", "garra", "girar", "globo", "grave", "grota", "gueto", "harpa", "haste",
-        "haver", "heroi", "horto", "humor", "ideal", "idoso", "igual", "ileso", "ilesa",
-        "impar", "india", "inves", "jogar", "jovem", "julho", "junho", "junta", "lagoa", "lapso",
-        "largo", "lebre", "leigo", "lenta", "lento", "lindo", "livre", "louro", "lutar", "macho",
-        "magma", "magro", "manha", "mania", "manso", "marca", "massa", "matam", "medir", "meigo",
-        "meios", "mesti", "mexer", "miudo", "morte", "mudar", "muito", "mulher", "murro", "musgo",
-        "nacao", "nariz", "natal", "negar", "neura", "nicho", "ninja", "notar", "obvia", "ofere",
-        "olhar", "ontem", "opaco", "optar", "ordem", "ossos", "outra", "ouvir", "palco",
-        "parou", "parte", "patas", "patio", "penal", "perco", "perto", "peso",
-        "pisar", "plano", "pobre", "poder", "porco", "porre", "posto", "pouco", "preco", "preto",
-        "prima", "prova", "pulga", "punha", "quase", "queda", "quero", "quilo", "ralar", "ranço",
-        "rapaz", "reage", "recem", "regar", "reino", "relax", "relva", "remar", "resto", "ritmo",
-        "roubo", "saber", "sairá", "salmo", "santo", "sarar", "sauna", "savio", "selar", "selva",
-        "sinal", "sinta", "sobra", "sogro", "sorte", "subir", "sujar", "super", "surto", "sutil",
-        "talha", "totem", "temer", "talvez", "tenho", "texto", "tiara", "tirar", "tomar", "topar", "torna",
-        "torre", "trago", "trama", "trapo", "treco", "trono", "turma", "uniao", "urgir", "vagar",
-        "valer", "valha", "vazio", "vejam", "verme", "verso", "viola", "vista", "vital", "viver",
-        "volta", "zebra", "zinco"
-      ]
+        "normal": [
+          "ábaco", "abade", "algor", "âmago", "âmbar", "andar", "ápice", "arque", "baile",
+          "bardo", "boato", "bolor", "banco", "calar", "carro", "casal", "certo", "chave", "cível", "cinto",
+          "clima", "cofre", "coisa", "cosmo", "cores", "cruel", "dente", "débil", "dique", "dizer", "doido",
+          "dorso", "dueto", "égide", "ébrio", "enfim", "esgar", "êxito", "êxodo", "fátuo",
+          "feliz", "fenda", "ferro", "festa", "filho", "forja", "forno", "fruir", "fotos", "folha",
+          "fruta", "fúria", "gente", "gênio", "gíria", "glifo", "glosa", "gosto", "grato",
+          "hoste", "ídolo", "ímpio", "ígneo", "índio", "íntia", "irado", "jazem", "jejum",
+          "jusso", "laudo", "leite", "letra", "lesma", "limão", "limbo", "linha", "livro", "lúmen",
+          "macio", "manhã", "manta", "matiz", "meiga", "meses", "metro", "meias", "mídia", "misto",
+          "moeda", "morar", "morro", "mundo", "nadar", "navio", "nível", "nobre", "noite", "norte",
+          "nuvem", "ocaso", "ódio", "odiar", "olhos", "órfão", "ousar", "pacto", "pálio", "papai",
+          "pária", "passe", "pasta", "peixe", "pedra", "piano", "piche", "pólen", "ponto", "praia",
+          "pular", "quark", "relho", "renda", "rodas", "reses", "rédea", "risco", "risos", "rodar", "rouca",
+          "rufar", "salto", "salve", "sarca", "seita", "símio", "sonho", "sorna", "sósia", "súcia",
+          "suave", "sulco", "tarde", "tédio", "tenaz", "tempo", "tênue", "terra", "toque", "torvo",
+          "tocar", "traço", "treno", "trupe", "troca", "troco", "turvo", "úbere", "úmido",
+          "vapor", "vário", "velha", "venha", "veraz", "verde", "verbo", "vento", "vezes", "vinco",
+          "visão", "vício", "vulto", "abriu", "acaso", "acima", "acude", "adeus", "adult",
+          "afiar", "agito", "agora", "alias", "aliar", "altar", "anelo", "anexo", "anoes", "antes",
+          "antro", "apito", "apodo", "arado", "aroma", "artef", "atado", "atual", "aviso", "axial",
+          "bazar", "beijo", "bento", "bicho", "bizar", "bloco", "bocal", "bossa", "botar", "brasa",
+          "bravo", "breve", "brisa", "bruto", "bulbo", "burro", "cacho", "cacto", "caixa", "calma",
+          "canso", "capaz", "capim", "carga", "carne", "casta", "ceder", "cegar", "chato", "choro",
+          "civil", "claro", "clico", "cobre", "coito", "colhe", "comer", "conto", "copas", "coral",
+          "corpo", "credo", "criar", "crise", "curto", "danar", "dança", "dardo", "desce", "disco",
+          "dobro", "doces", "dogma", "dores", "dorme", "drama", "duelo", "eixos", "elite",
+          "encar", "entra", "envio", "erram", "etapa", "etico", "evite", "exato",
+          "exibe", "falha", "falso", "farol", "fatal", "fauno", "fazer", "feira", "feroz", "feudo",
+          "ficar", "finta", "firma", "fixar", "fobia", "folga", "forca", "fosse", "fraco", "freio",
+          "fundo", "ganho", "garra", "girar", "globo", "grave", "grota", "gueto", "harpa", "haste",
+          "haver", "heroi", "horto", "humor", "ideal", "idoso", "igual", "ileso", "ilesa",
+          "impar", "india", "inves", "jogar", "jovem", "julho", "junho", "junta", "lagoa", "lapso",
+          "largo", "lebre", "leigo", "lenta", "lento", "lindo", "livre", "louro", "lutar", "macho",
+          "magma", "magro", "manha", "mania", "manso", "marca", "massa", "matam", "medir", "meigo",
+          "meios", "mesti", "mexer", "miudo", "morte", "mudar", "muito", "mulher", "murro", "musgo",
+          "nacao", "nariz", "natal", "negar", "neura", "nicho", "ninja", "notar", "obvia", "ofere",
+          "olhar", "ontem", "opaco", "optar", "ordem", "ossos", "outra", "ouvir", "palco",
+          "parou", "parte", "patas", "patio", "penal", "perco", "perto", "peso",
+          "pisar", "plano", "pobre", "poder", "porco", "porre", "posto", "pouco", "preco", "preto",
+          "prima", "prova", "pulga", "punha", "quase", "queda", "quero", "quilo", "ralar", "ranço",
+          "rapaz", "reage", "recem", "regar", "reino", "relax", "relva", "remar", "resto", "ritmo",
+          "roubo", "saber", "sairá", "salmo", "santo", "sarar", "sauna", "savio", "selar", "selva",
+          "sinal", "sinta", "sobra", "sogro", "sorte", "subir", "sujar", "super", "surto", "sutil",
+          "talha", "totem", "temer", "talvez", "tenho", "texto", "tiara", "tirar", "tomar", "topar", "torna",
+          "torre", "trago", "trama", "trapo", "treco", "trono", "turma", "uniao", "urgir", "vagar",
+          "valer", "valha", "vazio", "vejam", "verme", "verso", "viola", "vista", "vital", "viver",
+          "volta", "zebra", "zinco"
+        ]
+    },
+      EnUs: {
+        easy: [
+          "apple", "bread", "chair", "dance", "drink", "earth", "field", "glass",
+          "grape", "green", "happy", "house", "jelly", "juice", "light", "lunch",
+          "mouse", "music", "night", "ocean", "paint", "phone", "plant", "queen",
+          "quick", "river", "salad", "shirt", "short", "smile", "spoon", "table",
+          "teach", "thank", "tiger", "train", "uncle", "watch", "white", "woman",
+          "write", "zebra"
+        ],
+
+        normal: [
+          "apple", "bread", "chair", "dance", "drink", "earth", "field", "glass",
+          "grape", "green", "happy", "house", "jelly", "juice", "light", "lunch",
+          "mouse", "music", "night", "ocean", "paint", "phone", "plant", "queen",
+          "quick", "river", "salad", "shirt", "short", "smile", "spoon", "table",
+          "teach", "thank", "tiger", "train", "uncle", "watch", "white", "woman",
+          "write", "zebra",
+
+          "adobe", "aloof", "blaze", "brawl", "brink", "clamp", "couch", "cynic",
+          "dwarf", "eerie", "elbow", "evoke", "flair", "fluke", "gnome", "haste",
+          "hatch", "idiom", "jolly", "latch", "linen", "lofty", "lunar", "medal",
+          "mimic", "noble", "ounce", "pearl", "pivot", "plume", "realm", "scent",
+          "shard", "skull", "sling", "slope", "snarl", "swoop", "throb", "vigor",
+          "vivid", "waive", "whirl", "witty", "wrath", "yacht", "abide", "adorn", "aisle", "amber", "angry", "aptly", "arise", "arrow", "attic", "audio",
+          "baker", "batch", "beach", "beast", "bingo", "bleak", "blend", "blink", "bliss", "bloom",
+          "bluff", "bride", "brisk", "brood", "brush", "bulge", "bunch", "burly", "burnt", "burst",
+          "cabin", "canal", "cargo", "carve", "chant", "charm", "chess", "chime", "choir", "chord",
+          "clerk", "clone", "clown", "coast", "comet", "coral", "cover", "crate", "creed", "creek",
+          "crown", "curvy", "daily", "dealt", "delay", "dense", "depth", "digit", "diver", "dizzy",
+          "dodge", "donor", "doubt", "dough", "draft", "drain", "drift", "droll", "eagle", "elate",
+          "ember", "entry", "equal", "equip", "erase", "ethic", "fable", "faint", "faith", "feast",
+          "fever", "fiber", "fifty", "flame", "flare", "flock", "flute", "focus", "forge", "forth",
+          "freed", "frost", "furry", "giant", "glide", "gloom", "grace", "grain", "grasp", "grief",
+          "grind", "groan", "grove", "guile", "guilt", "habit", "harsh", "haste", "haunt", "hover",
+          "hymns", "ideal", "infer", "inlet", "irony", "issue", "itchy", "ivory", "jelly", "jewel",
+          "joint", "karma", "knack", "kneel", "knife", "knock", "label", "lance", "latch", "ledge",
+          "lemon", "linen", "liver", "livid", "lobby", "loose", "lunar", "lurid", "lyric", "magic",
+          "mango", "march", "marsh", "match", "mercy", "metal", "meter", "mirth", "mossy", "motto",
+          "mural", "muted", "naive", "nerve", "niche", "ninth", "noble", "noisy", "notch", "novel",
+          "nudge", "nylon", "oasis", "obey", "occur", "offer", "orbit", "organ", "oxide", "panel",
+          "panic", "parka", "paste", "peach", "perch", "phase", "plead", "pluck", "plush", "poise",
+          "porch", "prank", "press", "price", "prime", "prior", "prism", "proud", "punch", "quest",
+          "quiet", "quota", "rabid", "radio", "ranch", "raven", "rebel", "reign", "renal", "rider",
+          "ridge", "risky", "rival", "roast", "rough", "round", "ruler", "rusty", "saber", "saint",
+          "salty", "sandy", "satin", "scale", "scent", "scout", "scrap", "sever", "shade", "shady",
+          "shaft", "shaky", "shard", "shear", "sheep", "shell", "shiny", "shore", "shove", "shrew",
+          "shrub", "sight", "siren", "skate", "skirt", "slack", "slant", "slope", "smack", "smear",
+          "smoke", "snack", "snare", "sniff", "solar", "solid", "spade", "spare", "spark", "spear",
+          "sphere", "spice", "spike", "spine", "spite", "split", "spoil", "spray", "spurt", "squad",
+          "squat", "squib", "stack", "stair", "stalk", "stare", "steam", "steed", "stern", "sting",
+          "stomp", "stone", "storm", "strap", "stray", "strip", "stuck", "study", "sugar", "swamp",
+          "swarm", "sweat", "sweet", "swept", "swing", "swoop", "sword", "table", "taint", "tally",
+          "taper", "taste", "tempo", "tense", "thank", "theft", "theme", "thorn", "threw", "throb",
+          "thrum", "thumb", "tiara", "tidal", "tiger", "timid", "title", "token", "torch", "tough",
+          "toxin", "trace", "trail", "trait", "trash", "tread", "treat", "trend", "trial", "tribe",
+          "trick", "tried", "troop", "troll", "trunk", "truth", "tulip", "twice", "twist", "uncle",
+          "unity", "upper", "urban", "urged", "usage", "vague", "valid", "value", "vapor", "vault",
+          "vivid", "vocal", "vouch", "wager", "waist", "waltz", "waste", "watch", "water", "weary",
+          "wedge", "whale", "wheat", "whine", "whirl", "whisk", "white", "wider", "wield", "wiser",
+          "witch", "witty", "woman", "woven", "wrack", "wrath", "wrist", "wrong", "xerox", "yacht",
+          "yield", "young", "youth", "zebra", "zilch", "zonal"
+        ]
+      }
     };
 
-    let currentDifficulty = localStorage.getItem('difficulty') || 'normal';
-    
-    let targetWord = getRandomWord(currentDifficulty);
 
-    function getRandomWord() {
-      const list = wordsPtBr[currentDifficulty];
+    let currentDifficulty = localStorage.getItem('difficulty') || 'normal';
+      
+    let currentLang = localStorage.getItem('lang') || 'PtBr';
+
+    let targetWord = getRandomWord(currentDifficulty, currentLang);
+
+
+    function getRandomWord(currentDifficulty, currentLang) {
+      const list = wordsList[currentLang][currentDifficulty];
       return list[Math.floor(Math.random() * list.length)].toUpperCase();
     }
 
 
     const toggleDifficultyBtn = document.getElementById('toggleDifficultyBtn');
+    const toggleLangBtn = document.getElementById('toggleLangBtn');
 
     // Function to update the text of the button with the current difficulty
-    function updateDifficultyText() {
+    function updateDifficultyLiText() {
       toggleDifficultyBtn.textContent = `Alternar dificuldade: ${currentDifficulty}`;
     }
-// Init when JS loads
-updateDifficultyText();
+updateDifficultyLiText();
+
+    // Function to update the text of the button with the current language
+    function updateLangLiText() {
+      if (currentLang === 'PtBr') {
+        toggleLangBtn.textContent = `Idioma: Português`;
+      } else {
+        toggleLangBtn.textContent = `Language: English`;
+      }
+    }
+updateLangLiText();
 
 
     // -- Board --
