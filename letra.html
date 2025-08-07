@@ -652,7 +652,7 @@
 
 
   <footer>
-    <small>Personal learning project, inspired by the term.ooo game — Developed by <a href="https://www.github.com/xyz-leo" target="_blank">xyz-leo</a></small>
+    <small>Personal learning project — Developed by <a href="https://www.github.com/xyz-leo" target="_blank">xyz-leo</a></small>
   </footer>
 
   <script>
@@ -682,12 +682,12 @@
 
     helpbtn.addEventListener('click', () => {
       openModal(`<h2>Como Jogar LETRA</h2>
-<p>Bem-vindo ao LETRA — um jogo de adivinhação de palavras offline inspirado no Term.ooo!</p>
+<p>Bem-vindo ao LETRA — um jogo de adivinhação de palavras, totalmente offline!<br><br><strong>Atenção: no teclado virtual, a tecla ENTER "↵", para enviar as tentativas, está abaixo da letra "A".</strong></p><br>
 
 <h3>Objetivo</h3>
 <p>Adivinhe a palavra secreta em até 6 tentativas.</p>
 
-<h3>Como Jogar</h3>
+<br><h3>Como Jogar</h3>
 <ul>
   <li>Digite uma palavra de 5 letras usando o teclado virtual ou o teclado físico.</li>
   <li>Após cada tentativa, as cores das letras irão mudar para indicar:</li>
@@ -699,7 +699,7 @@
   <li>Use essas dicas para ajustar suas próximas tentativas.</li>
 </ul>
 
-<h3>Botões</h3>
+<br><h3>Botões</h3>
 <ul>
   <li><strong>❔ Help:</strong> abre este tutorial.</li>
   <li><strong>📊 Stats:</strong> mostra suas estatísticas de jogo.</li>
@@ -820,7 +820,7 @@
 <p>A interface foi construída com <code>HTML</code>, <code>CSS</code> e <code>JavaScript</code> puros, sem uso de bibliotecas ou framework externos. Todo o projeto está contido em um único arquivo <code>.html</code>, o que permite que ele funcione completamente offline, sem necessidade de servidor ou instalação. Essa abordagem reforça a proposta de simplicidade e portabilidade.</p><br>
 <h2>Meu objetivo</h2>
 <p>O principal objetivo deste projeto foi criar algo divertido que também servisse como exercício prático para refinar minhas habilidades em programação front-end.</p><br>
-<h2>Meu GitHub</h2>
+<h2>Minha página no GitHub</h2>
 <a href="https://github.com/xyz-leo" target=_blank style="color: #3ecf8e;">xyz-leo</a>
 `);
           break;
@@ -1408,11 +1408,6 @@ updateLangLiText();
         }, 600); // fade-out before hide
       }, duration);
     }
-
-
-    // DEBUG ONLY
-    const footer = document.querySelector('footer');
-    footer.innerHTML += targetWord;
   </script>
 </body>
 </html>
