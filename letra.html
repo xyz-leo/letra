@@ -789,7 +789,10 @@
     });
 
     document.addEventListener('click', (e) => {
-      if (!cfgbtn.contains(e.target) && !cfgDropdown.contains(e.target)) {
+      const clickedOutside = !cfgbtn.contains(e.target) && !cfgDropdown.contains(e.target);
+      const clickedOnOption = e.target.closest('[data-action]'); // clicked in any menu item
+
+      if (clickedOutside || clickedOnOption) {
         cfgDropdown.classList.add('hidden');
       }
     });
@@ -800,8 +803,11 @@
 
       switch (action) {
         case 'clearStats':
-          clearStats();
+          if (confirm('Apagar estatísticas?')) {
+            clearStats();
+          }
           break;
+
         case 'showAbout':
           openModal(`
 <h2>LETRA</h2>
@@ -856,9 +862,9 @@
 
 
     // words
-    const words = {
+    const wordsPtBr = {
       "easy": [
-        "amigo", "andar", "baile", "banco", "bicho", "botas", "brisa", "cabra",
+        "amigo", "baile", "banco", "bicho", "botas", "brisa", "cabra",
         "carta", "casal", "caixa", "carro", "certo", "chave", "cinza", "claro", "clima", "cofre",
         "coisa", "cores", "cesta", "cinto", "campo", "dente", "dizer", "doido", "dólar", "feira",
         "feliz", "ferro", "festa", "filho", "fotos", "folha", "forno", "fruta", "gente", "gosto",
@@ -867,38 +873,67 @@
         "noite", "norte", "nobre", "nuvem", "nadar", "olhos", "papai", "pacto", "pasta", "piano",
         "ponto", "pular", "passe", "peixe", "pedra", "praia", "ponta", "risco", "risos", "roupa",
         "rodar", "salto", "salve", "sonho", "suave", "tempo", "terra", "toque", "treno", "troca",
-        "tarde", "tocar", "troco", "velha", "venha", "vezes", "verde", "vento", "vapor", "baile",
+        "tarde", "tocar", "troco", "velha", "venha", "vezes", "verde", "vento", "vapor", 
         "andar", "achar", "novas", "calma", "cerca", "manta", "renda"
       ],
 
       "normal": [
         "ábaco", "abade", "algor", "âmago", "âmbar", "andar", "ápice", "arque", "baile",
-        "bardo", "boato", "bolor", "calar", "carro", "casal", "certo", "chave", "cível", "cinto",
-        "clima", "cofre", "coisa", "cores", "cruel", "dente", "débil", "dique", "dizer", "doido",
-        "dorso", "dueto", "égide", "ébrio", "enfim", "esgar", "exílio", "êxito", "êxodo", "fátuo",
+        "bardo", "boato", "bolor", "banco", "calar", "carro", "casal", "certo", "chave", "cível", "cinto",
+        "clima", "cofre", "coisa", "cosmo", "cores", "cruel", "dente", "débil", "dique", "dizer", "doido",
+        "dorso", "dueto", "égide", "ébrio", "enfim", "esgar", "êxito", "êxodo", "fátuo",
         "feliz", "fenda", "ferro", "festa", "filho", "forja", "forno", "fruir", "fotos", "folha",
-        "fruta", "fúria", "gente", "gênio", "gíria", "glifo", "glosa", "gosto", "grato", "hímen",
-        "hoste", "ídolo", "idílio", "ímpio", "ígneo", "índio", "íntia", "irado", "jazem", "jejum",
+        "fruta", "fúria", "gente", "gênio", "gíria", "glifo", "glosa", "gosto", "grato",
+        "hoste", "ídolo", "ímpio", "ígneo", "índio", "íntia", "irado", "jazem", "jejum",
         "jusso", "laudo", "leite", "letra", "lesma", "limão", "limbo", "linha", "livro", "lúmen",
         "macio", "manhã", "manta", "matiz", "meiga", "meses", "metro", "meias", "mídia", "misto",
-        "moeda", "morar", "morro", "mundo", "nadar", "navio", "nível", "nítido", "nobre", "noite",
-        "norte", "nuvem", "ocaso", "ódio", "odiar", "olhos", "órfão", "ousar", "pacto", "pálio",
-        "papai", "pária", "passe", "pasta", "peixe", "pedra", "piano", "piche", "pólen", "ponto",
-        "praia", "pular", "quark", "relho", "renda", "reses", "rédea", "risco", "risos", "rodar",
-        "rouca", "rufar", "salto", "salve", "sarca", "seita", "símio", "sonho", "sorna",
-        "sósia", "súcia", "suave", "sulco", "tarde", "tédio", "tenaz", "tempo", "tênue",
-        "terra", "toque", "torvo", "tocar", "traço", "treno", "trupe", "troca", "troco", "tocar",
-        "turvo", "úbere", "úmido", "vapor", "vário", "velha", "venha", "veraz", "verde", "verbo",
-        "vento", "vezes", "vinco", "visão", "vício", "vulto", 
+        "moeda", "morar", "morro", "mundo", "nadar", "navio", "nível", "nobre", "noite", "norte",
+        "nuvem", "ocaso", "ódio", "odiar", "olhos", "órfão", "ousar", "pacto", "pálio", "papai",
+        "pária", "passe", "pasta", "peixe", "pedra", "piano", "piche", "pólen", "ponto", "praia",
+        "pular", "quark", "relho", "renda", "rodas", "reses", "rédea", "risco", "risos", "rodar", "rouca",
+        "rufar", "salto", "salve", "sarca", "seita", "símio", "sonho", "sorna", "sósia", "súcia",
+        "suave", "sulco", "tarde", "tédio", "tenaz", "tempo", "tênue", "terra", "toque", "torvo",
+        "tocar", "traço", "treno", "trupe", "troca", "troco", "turvo", "úbere", "úmido",
+        "vapor", "vário", "velha", "venha", "veraz", "verde", "verbo", "vento", "vezes", "vinco",
+        "visão", "vício", "vulto", "abriu", "acaso", "acima", "acude", "adeus", "adult",
+        "afiar", "agito", "agora", "alias", "aliar", "altar", "anelo", "anexo", "anoes", "antes",
+        "antro", "apito", "apodo", "arado", "aroma", "artef", "atado", "atual", "aviso", "axial",
+        "bazar", "beijo", "bento", "bicho", "bizar", "bloco", "bocal", "bossa", "botar", "brasa",
+        "bravo", "breve", "brisa", "bruto", "bulbo", "burro", "cacho", "cacto", "caixa", "calma",
+        "canso", "capaz", "capim", "carga", "carne", "casta", "ceder", "cegar", "chato", "choro",
+        "civil", "claro", "clico", "cobre", "coito", "colhe", "comer", "conto", "copas", "coral",
+        "corpo", "credo", "criar", "crise", "curto", "danar", "dança", "dardo", "desce", "disco",
+        "dobro", "doces", "dogma", "dores", "dorme", "drama", "duelo", "eixos", "elite",
+        "encar", "entra", "envio", "erram", "etapa", "etico", "evite", "exato",
+        "exibe", "falha", "falso", "farol", "fatal", "fauno", "fazer", "feira", "feroz", "feudo",
+        "ficar", "finta", "firma", "fixar", "fobia", "folga", "forca", "fosse", "fraco", "freio",
+        "fundo", "ganho", "garra", "girar", "globo", "grave", "grota", "gueto", "harpa", "haste",
+        "haver", "heroi", "horto", "humor", "ideal", "idoso", "igual", "ileso", "ilesa",
+        "impar", "india", "inves", "jogar", "jovem", "julho", "junho", "junta", "lagoa", "lapso",
+        "largo", "lebre", "leigo", "lenta", "lento", "lindo", "livre", "louro", "lutar", "macho",
+        "magma", "magro", "manha", "mania", "manso", "marca", "massa", "matam", "medir", "meigo",
+        "meios", "mesti", "mexer", "miudo", "morte", "mudar", "muito", "mulher", "murro", "musgo",
+        "nacao", "nariz", "natal", "negar", "neura", "nicho", "ninja", "notar", "obvia", "ofere",
+        "olhar", "ontem", "opaco", "optar", "ordem", "ossos", "outra", "ouvir", "palco",
+        "parou", "parte", "patas", "patio", "penal", "perco", "perto", "peso",
+        "pisar", "plano", "pobre", "poder", "porco", "porre", "posto", "pouco", "preco", "preto",
+        "prima", "prova", "pulga", "punha", "quase", "queda", "quero", "quilo", "ralar", "ranço",
+        "rapaz", "reage", "recem", "regar", "reino", "relax", "relva", "remar", "resto", "ritmo",
+        "roubo", "saber", "sairá", "salmo", "santo", "sarar", "sauna", "savio", "selar", "selva",
+        "sinal", "sinta", "sobra", "sogro", "sorte", "subir", "sujar", "super", "surto", "sutil",
+        "talha", "totem", "temer", "talvez", "tenho", "texto", "tiara", "tirar", "tomar", "topar", "torna",
+        "torre", "trago", "trama", "trapo", "treco", "trono", "turma", "uniao", "urgir", "vagar",
+        "valer", "valha", "vazio", "vejam", "verme", "verso", "viola", "vista", "vital", "viver",
+        "volta", "zebra", "zinco"
       ]
     };
 
-    let currentDifficulty = localStorage.getItem('difficulty') || 'easy';
+    let currentDifficulty = localStorage.getItem('difficulty') || 'normal';
     
     let targetWord = getRandomWord(currentDifficulty);
 
     function getRandomWord() {
-      const list = words[currentDifficulty];
+      const list = wordsPtBr[currentDifficulty];
       return list[Math.floor(Math.random() * list.length)].toUpperCase();
     }
 
