@@ -22,13 +22,13 @@
 - A new word is generated after game over or refreshing the page.
 - Statistics about win rate, tries, games played and more.
 
-*(Note: This version may use embedded CSS/JS inside `letra.html` for simplicity.)*
+*(Note: This version may use embedded CSS/JS inside `index.html` for simplicity.)*
 
 ## How to Run
 
-1. Clone the repository or simply download the file letra.html.
-2. If the file letra.html is downloaded as letra.txt, simply rename it back to letra.html and open it with a Browser.
-3. Open `letra.html` directly in a browser.
+1. Clone the repository or simply download the file index.html.
+2. If the file index.html is downloaded as index.txt, simply rename it back to index.html (or letra.html) and open it with a Browser.
+3. Open `index.html` directly in a browser.
 4. Start typing with the on-screen keyboard.
 
 No build tools, server, or dependencies required.
